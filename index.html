@@ -13,7 +13,6 @@
 <body>
 
 <script type="text/javascript">
-
     var config = {
         type: Phaser.AUTO,
         width: 800,
@@ -41,7 +40,7 @@
     function preload () {
         this.load.image('sky', 'assets/sky.png');
         this.load.image('ground', 'assets/platform.png');
-        this.load.image('bomb', 'assets/bomb.png');
+        this.load.image('enemy', 'assets/bomb.png');
         this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     }
 
@@ -83,18 +82,21 @@
 			repeat: -1
 		});
 
-		bombs = this.physics.add.group({
-			key: 'bomb',
+		enemies = this.physics.add.group({
+			key: 'enemy',
 			repeat: 2,
 			setXY: { x: 12, y: 0, stepX: 200 }
 		});
 
-		this.physics.add.collider(bombs, platforms);
-		this.physics.add.collider(player, bombs, hitBomb, null, this);
+		
+
+		this.physics.add.collider(enemies, platforms);
+		this.physics.add.collider(player, enemies, hitEnemy, null, this);
 
 		this.physics.add.collider(player, platforms);
 		//this.physics.add.overlap(player, stars, collectStar, null, this);
     }
+	
 
     function update () {
 		cursors = this.input.keyboard.createCursorKeys();
@@ -114,10 +116,11 @@
 			player.setVelocityY(-330);
 		}
 
-		this.physics.collide(bombs, platforms, patrolPlatform, null, this);
+		//patrolPlatform(enemies, platforms)
 	}
+
 	
-	function hitBomb(player, bomb) {
+	function hitEnemy(player, slime) {
 		this.physics.pause();
 		player.setTint(0xff00000);
 		player.anims.play('turn');
@@ -125,7 +128,8 @@
 	}
 
 	function patrolPlatform(enemy, platform) {
-    // if enemy moving to right and has started to move over right edge of platform
+		enemies.setVelocity(100);
+    //if enemy moving to right and has started to move over right edge of platform
     if (enemy.body.velocity.x > 0 && enemy.right > platform.right) {
         enemy.body.velocity.x *= -1; // reverse direction
     }
