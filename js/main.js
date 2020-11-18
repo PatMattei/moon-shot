@@ -12,9 +12,9 @@ function Hero(game, x, y) {
 	this.game.physics.enable(this);
 	this.body.collideWorldBounds = true;
 
-	this.animations.add('stop', [0]);
-	this.animations.add('run', [1,2], 8, true);
-	this.animations.add('jump', [3]);
+	this.animations.add('stop', [4]);
+	this.animations.add('run', [5,6,7,8], 8, true);
+	this.animations.add('jump', [8]);
 	this.animations.add('fall', [4]);
 }
 
@@ -153,7 +153,7 @@ PlayState.preload = function() {
 	this.game.load.audio('sfx:jump', 'audio/jump.wav');
 	this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
 
-	this.game.load.spritesheet('hero', 'images/hero.png', 36, 42);
+	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
 	this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
 };
 
@@ -176,8 +176,9 @@ PlayState.update = function() {
 
 
 PlayState._loadLevel = function (data) {
-    // create all the groups/layers that we need
-    this.platforms = this.game.add.group();
+	// create all the groups/layers that we need
+	this.bgDecoration = this.game.add.group();
+	this.platforms = this.game.add.group();
     this.spiders = this.game.add.group();
     this.enemyWalls = this.game.add.group();
     this.enemyWalls.visible = false;
