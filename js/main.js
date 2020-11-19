@@ -141,6 +141,8 @@ PlayState.init = function(data) {
 		}
 	}, this);
 
+	this.clearedLevel = false;
+
 	this.level = (data.level || 0) % LEVEL_COUNT;
 };
 
@@ -160,24 +162,20 @@ PlayState.preload = function() {
 
 	this.game.load.audio('sfx:jump', 'audio/jump.wav');
 	this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
-	this.game.load.audio('sfx:door', 'audio/door.wav');
 
 	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
 	this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
-	this.game.load.spritesheet('door', 'images/door.png', 42, 66);
 };
 
 // create game entities and set up world here
 PlayState.create = function() {
 	this.sfx = {
 		jump: this.game.add.audio('sfx:jump'),
-		stomp: this.game.add.audio('sfx:stomp'),
-		door: this.game.add.audio('sfx:door')
+		stomp: this.game.add.audio('sfx:stomp')
 	};
 
 	// create level
 	this.game.add.image(0, 0, 'background');
-	console.log()
     this._loadLevel(this.game.cache.getJSON(`level:${this.level}`));
 };
 
@@ -186,24 +184,25 @@ PlayState.update = function() {
 	this._handleInput();
 }
 
-PlayState._loadLevel = function (data) {
+PlayState._loadLevel = function(data) {
 	// create all the groups/layers that we need
 	this.bgDecoration = this.game.add.group();
 	this.platforms = this.game.add.group();
     this.spiders = this.game.add.group();
     this.enemyWalls = this.game.add.group();
-    this.enemyWalls.visible = false;
+	this.enemyWalls.visible = false;
 
     // spawn all platforms
 	data.platforms.forEach(this._spawnPlatform, this);
 	// spawn hero and enemies
     this._spawnCharacters({hero: data.hero, spiders: data.spiders});
-	//spawn important objects
-	this._spawnDoor(data.door.x, data.door.y);
 
     // enable gravity
     const GRAVITY = 1200;
-    this.game.physics.arcade.gravity.y = GRAVITY;
+	this.game.physics.arcade.gravity.y = GRAVITY;
+
+	this.enemyCount = data.spiders.length;
+	this.killCount = 0;
 };
 
 PlayState._spawnPlatform = function(platform) {
@@ -217,13 +216,6 @@ PlayState._spawnPlatform = function(platform) {
     this._spawnEnemyWall(platform.x, platform.y, 'left');
     this._spawnEnemyWall(platform.x + sprite.width, platform.y, 'right');
 };
-
-PlayState._spawnDoor = function(x, y) {
-	this.door = this.bgDecoration.create(x, y, 'door');
-	this.door.anchor.setTo(0.5, 1);
-	this.game.physics.enable(this.door);
-	this.door.body.allowGravity = false;
-}
 
 PlayState._spawnEnemyWall = function(x, y, side) {
     let sprite = this.enemyWalls.create(x, y, 'invisible-wall');
@@ -251,11 +243,6 @@ PlayState._handleCollisions = function() {
 	this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
 	this.game.physics.arcade.collide(this.hero, this.platforms);
 	this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
-	this.game.physics.arcade.overlap(this.hero, this.door, this._onHeroVsDoor, 
-		// ignore if the player is in the air
-		function(hero, door) {
-			return hero.body.touching.down;
-	}, this);
 }
 
 PlayState._handleInput = function() {
@@ -271,18 +258,18 @@ PlayState._handleInput = function() {
 PlayState._onHeroVsEnemy = function(hero, enemy) {
 	if (hero.body.velocity.y > 0) { // kill enemies when hero is falling
 		hero.bounce()
-		
 		enemy.die();
+
 		this.sfx.stomp.play();
+		
+		this.killCount++;
+		if (this.killCount === this.enemyCount) { //level cleared
+			this.game.state.restart(true, false, { level: this.level + 1 });
+		}
 	} else {
 		this.sfx.stomp.play();
 		this.game.state.restart(true, false, {level: this.level});
 	}
-}
-
-PlayState._onHeroVsDoor = function(hero, door) {
-	this.sfx.door.play();
-	this.game.state.restart(true, false, { level: this.level + 1 });
 }
 
 // =============================================================================
