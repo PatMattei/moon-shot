@@ -87,7 +87,7 @@ function Spider(game, x, y) {
 	//anchor
 	this.anchor.set(0.5);
 	//animation
-	this.animations.add('crawl', [0, 1, 2], 8, true);
+	this.animations.add('crawl', [0, 1, 2, 3], 8, true);
 	this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
 	this.animations.play('crawl');
 
@@ -211,7 +211,7 @@ PlayState.preload = function () {
 	this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
 
 	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
-	this.game.load.spritesheet('spider', 'images/spider.png', 42, 32);
+	this.game.load.spritesheet('spider', 'images/red_slime.png', 32, 38);
 	this.game.load.spritesheet('crescent', 'images/crescent.png')
 };
 
