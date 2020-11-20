@@ -176,7 +176,7 @@ PlayState.init = function (data) {
 	this.keys = this.game.input.keyboard.addKeys({
 		left: Phaser.KeyCode.A,
 		right: Phaser.KeyCode.D,
-		up: Phaser.KeyCode.SPACEBAR,
+		up: Phaser.KeyCode.W,
 		fireLeft: Phaser.KeyCode.LEFT,
 		fireRight: Phaser.KeyCode.RIGHT
 	});
