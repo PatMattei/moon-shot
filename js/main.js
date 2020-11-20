@@ -130,15 +130,20 @@ function Crescent(game, x, y) {
 
 	//physics
 	this.game.physics.enable(this);
-	this.body.collideWorldBounds = true;
+	this.body.collideWorldBounds = false;
 	this.body.velocity.x = Crescent.SPEED;
 }
 
 Crescent.prototype = Object.create(Phaser.Sprite.prototype);
 Crescent.prototype.constructor = Crescent;
 
-Crescent.prototype.shoot = function () {
-	Crescent.SPEED = 250
+Crescent.prototype.shoot = function (direction) {
+	Crescent.shootDir = direction;
+	if (Crescent.shootDir === 1) {
+		Crescent.SPEED = 400
+	} else {
+		Crescent.SPEED = -400
+	}
 	this.body.velocity.x = Crescent.SPEED;
 	if (this.body.touching.Hero) {
 		this.kill();
@@ -146,8 +151,15 @@ Crescent.prototype.shoot = function () {
 }
 
 Crescent.prototype.update = function () {
-	if (Crescent.SPEED > 0) {
-		Crescent.SPEED -= 10;
+	if (this.shootDir === 1) {
+		this.body.velocity.y -= 20;
+		this.body.velocity.x -= 4;
+	} else {
+		this.body.velocity.y -= 20;
+		this.body.velocity.x += 4;
+	}
+	if (this.inCamera === false) {
+		this.kill();
 	}
 }
 
@@ -162,10 +174,11 @@ const LEVEL_COUNT = 2;
 PlayState.init = function (data) {
 	this.game.renderer.renderSession.roundPixels = true;
 	this.keys = this.game.input.keyboard.addKeys({
-		left: Phaser.KeyCode.LEFT,
-		right: Phaser.KeyCode.RIGHT,
-		up: Phaser.KeyCode.UP,
-		space: Phaser.KeyCode.SPACE
+		left: Phaser.KeyCode.A,
+		right: Phaser.KeyCode.D,
+		up: Phaser.KeyCode.SPACEBAR,
+		fireLeft: Phaser.KeyCode.LEFT,
+		fireRight: Phaser.KeyCode.RIGHT
 	});
 
 	this.keys.up.onDown.add(function () {
@@ -288,10 +301,16 @@ PlayState._handleInput = function () {
 		this.hero.move(-1);
 	} else if (this.keys.right.isDown) {
 		this.hero.move(1);
-	} else if (this.keys.space.isDown) {
-		console.log('space was pressed');
-		let sprite = new Crescent(this.game, 100, 100);
-		sprite.shoot(); 
+	} else if (this.keys.fireLeft.isDown) {
+		let sprite = new Crescent(this.game, this.hero.x, this.hero.y);
+		this.game.add.existing(sprite);
+		sprite.shootDir = -1
+		sprite.shoot(-1);
+	} else if (this.keys.fireRight.isDown) {
+		let sprite = new Crescent(this.game, this.hero.x, this.hero.y);
+		this.game.add.existing(sprite);
+		sprite.shootDir = 1
+		sprite.shoot(1);
 	} else {	
 		this.hero.move(0);
 	}
