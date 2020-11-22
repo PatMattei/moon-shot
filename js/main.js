@@ -87,7 +87,7 @@ function Spider(game, x, y) {
 	//anchor
 	this.anchor.set(0.5);
 	//animation
-	this.animations.add('crawl', [0, 1, 2, 3], 8, true);
+	this.animations.add('crawl', [0, 1, 2, 3, 3, 3], 8, true);
 	this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
 	this.animations.play('crawl');
 
@@ -293,6 +293,7 @@ PlayState._handleCollisions = function () {
 	this.game.physics.arcade.collide(this.spiders, this.platforms);
 	this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
 	this.game.physics.arcade.collide(this.hero, this.platforms);
+	this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
 	this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
 }
 
