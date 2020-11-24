@@ -212,7 +212,7 @@ PlayState.preload = function () {
 
 	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
 	this.game.load.spritesheet('spider', 'images/red_slime.png', 32, 38);
-	this.game.load.spritesheet('crescent', 'images/crescent.png')
+	this.game.load.spritesheet('crescent', 'images/crescent.png', 14, 15)
 };
 
 // create game entities and set up world here
@@ -289,12 +289,19 @@ PlayState._spawnCharacters = function (data) {
 	}, this);
 };
 
+PlayState._spawnProjectiles = function(direction) {
+	this.crescent = new Crescent(this.game, this.hero.x, this.hero.y);
+	this.game.add.existing(this.crescent);
+	this.crescent.shootDir = direction
+	this.crescent.shoot(direction);
+}
+
 PlayState._handleCollisions = function () {
 	this.game.physics.arcade.collide(this.spiders, this.platforms);
 	this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
 	this.game.physics.arcade.collide(this.hero, this.platforms);
 	this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
-	this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
+	this.game.physics.arcade.overlap(this.crescent, this.spiders, this._onProjectileVsEnemy, null, this);
 }
 
 PlayState._handleInput = function () {
@@ -303,15 +310,9 @@ PlayState._handleInput = function () {
 	} else if (this.keys.right.isDown) {
 		this.hero.move(1);
 	} else if (this.keys.fireLeft.isDown) {
-		let sprite = new Crescent(this.game, this.hero.x, this.hero.y);
-		this.game.add.existing(sprite);
-		sprite.shootDir = -1
-		sprite.shoot(-1);
+		this._spawnProjectiles(-1);
 	} else if (this.keys.fireRight.isDown) {
-		let sprite = new Crescent(this.game, this.hero.x, this.hero.y);
-		this.game.add.existing(sprite);
-		sprite.shootDir = 1
-		sprite.shoot(1);
+		this._spawnProjectiles(1);
 	} else {	
 		this.hero.move(0);
 	}
@@ -334,6 +335,28 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
 		this.sfx.stomp.play();
 		this.game.state.restart(true, false, {
 			level: this.level
+		});
+	}
+}
+
+
+// PlayState._onHeroVsEnemy = function (hero, enemy) {
+// 	this.sfx.stomp.play();
+// 	this.game.state.restart(true, false, {
+// 		level: this.level
+// 	});
+// }
+
+PlayState._onProjectileVsEnemy = function(projectile, enemy) {
+	console.log('dead');
+	enemy.die();
+
+	this.sfx.stomp.play();
+
+	this.killCount++;
+	if (this.killCount === this.enemyCount) { //level cleared
+		this.game.state.restart(true, false, {
+			level: this.level + 1
 		});
 	}
 }
