@@ -81,36 +81,36 @@ Hero.prototype.update = function () {
 //
 // enemy sprite
 //
-function Spider(game, x, y) {
-	Phaser.Sprite.call(this, game, x, y, 'spider');
+function Slime(game, x, y) {
+	Phaser.Sprite.call(this, game, x, y, 'slime');
 
 	//anchor
 	this.anchor.set(0.5);
 	//animation
 	this.animations.add('crawl', [0, 1, 2, 3, 3, 3], 8, true);
-	this.animations.add('die', [0, 4, 0, 4, 0, 4, 3, 3, 3, 3, 3, 3], 12);
+	this.animations.add('die', [0], 12);
 	this.animations.play('crawl');
 
 	//physics
 	this.game.physics.enable(this);
 	this.body.collideWorldBounds = true;
-	this.body.velocity.x = Spider.SPEED;
+	this.body.velocity.x = Slime.SPEED;
 }
 
-Spider.SPEED = 100;
+Slime.SPEED = 100;
 
-Spider.prototype = Object.create(Phaser.Sprite.prototype);
-Spider.prototype.constructor = Spider;
-Spider.prototype.update = function () {
+Slime.prototype = Object.create(Phaser.Sprite.prototype);
+Slime.prototype.constructor = Slime;
+Slime.prototype.update = function () {
 	//check against walls
 	if (this.body.touching.right || this.body.blocked.right) {
-		this.body.velocity.x = -Spider.SPEED; //turn left
+		this.body.velocity.x = -Slime.SPEED; //turn left
 	} else if (this.body.touching.left || this.body.blocked.left) {
-		this.body.velocity.x = Spider.SPEED //turn right
+		this.body.velocity.x = Slime.SPEED //turn right
 	}
 };
 
-Spider.prototype.die = function () {
+Slime.prototype.die = function () {
 	this.body.enable = false;
 
 	this.animations.play('die').onComplete.addOnce(function () {
@@ -211,7 +211,7 @@ PlayState.preload = function () {
 	this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
 
 	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
-	this.game.load.spritesheet('spider', 'images/red_slime.png', 32, 38);
+	this.game.load.spritesheet('slime', 'images/red_slime.png', 32, 38);
 	this.game.load.spritesheet('crescent', 'images/crescent.png', 14, 15)
 };
 
@@ -236,7 +236,7 @@ PlayState._loadLevel = function (data) {
 	// create all the groups/layers that we need
 	this.bgDecoration = this.game.add.group();
 	this.platforms = this.game.add.group();
-	this.spiders = this.game.add.group();
+	this.slimes = this.game.add.group();
 	this.enemyWalls = this.game.add.group();
 	this.enemyWalls.visible = false;
 
@@ -245,14 +245,14 @@ PlayState._loadLevel = function (data) {
 	// spawn hero and enemies
 	this._spawnCharacters({
 		hero: data.hero,
-		spiders: data.spiders
+		slimes: data.slimes
 	});
 
 	// enable gravity
 	const GRAVITY = 1200;
 	this.game.physics.arcade.gravity.y = GRAVITY;
 
-	this.enemyCount = data.spiders.length;
+	this.enemyCount = data.slimes.length;
 	this.killCount = 0;
 };
 
@@ -283,9 +283,9 @@ PlayState._spawnCharacters = function (data) {
 	this.game.add.existing(this.hero);
 
 	//spawn enemies
-	data.spiders.forEach(function (spider) {
-		let sprite = new Spider(this.game, spider.x, spider.y);
-		this.spiders.add(sprite);
+	data.slimes.forEach(function (slime) {
+		let sprite = new Slime(this.game, slime.x, slime.y);
+		this.slimes.add(sprite);
 	}, this);
 };
 
@@ -297,11 +297,11 @@ PlayState._spawnProjectiles = function(direction) {
 }
 
 PlayState._handleCollisions = function () {
-	this.game.physics.arcade.collide(this.spiders, this.platforms);
-	this.game.physics.arcade.collide(this.spiders, this.enemyWalls);
+	this.game.physics.arcade.collide(this.slimes, this.platforms);
+	this.game.physics.arcade.collide(this.slimes, this.enemyWalls);
 	this.game.physics.arcade.collide(this.hero, this.platforms);
-	this.game.physics.arcade.overlap(this.hero, this.spiders, this._onHeroVsEnemy, null, this);
-	this.game.physics.arcade.overlap(this.crescent, this.spiders, this._onProjectileVsEnemy, null, this);
+	this.game.physics.arcade.overlap(this.hero, this.slimes, this._onHeroVsEnemy, null, this);
+	this.game.physics.arcade.overlap(this.crescent, this.slimes, this._onProjectileVsEnemy, null, this);
 }
 
 PlayState._handleInput = function () {
