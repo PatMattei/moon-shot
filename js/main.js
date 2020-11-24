@@ -214,7 +214,7 @@ PlayState.preload = function () {
 
 	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
 	this.game.load.spritesheet('slime', 'images/red_slime.png', 32, 38);
-	this.game.load.spritesheet('crescent', 'images/crescent.png', 14, 15)
+	this.game.load.spritesheet('crescent', 'images/crescent.png', 14, 15);
 };
 
 // create game entities and set up world here
@@ -342,7 +342,6 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
 }
 
 PlayState._onProjectileVsEnemy = function(projectile, enemy) {
-	console.log('dead');
 	enemy.die();
 
 	this.sfx.stomp.play();
