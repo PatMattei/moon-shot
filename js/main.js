@@ -52,11 +52,6 @@ Hero.prototype.jump = function () {
 	return canJump;
 }
 
-Hero.prototype.bounce = function () {
-	const BOUNCE_SPEED = 200;
-	this.body.velocity.y = -BOUNCE_SPEED;
-}
-
 Hero.prototype._getAnimationName = function () {
 	let name = 'stop'; //default
 
@@ -345,14 +340,6 @@ PlayState._onHeroVsEnemy = function (hero, enemy) {
 		});
 	}
 }
-
-
-// PlayState._onHeroVsEnemy = function (hero, enemy) {
-// 	this.sfx.stomp.play();
-// 	this.game.state.restart(true, false, {
-// 		level: this.level
-// 	});
-// }
 
 PlayState._onProjectileVsEnemy = function(projectile, enemy) {
 	console.log('dead');
