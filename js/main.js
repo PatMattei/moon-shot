@@ -89,6 +89,7 @@ function Slime(game, x, y) {
 	//animation
 	this.animations.add('crawl', [0, 1, 2, 3, 3, 3], 8, true);
 	this.animations.add('die', [0], 12);
+
 	this.animations.play('crawl');
 
 	//physics
@@ -107,6 +108,12 @@ Slime.prototype.update = function () {
 		this.body.velocity.x = -Slime.SPEED; //turn left
 	} else if (this.body.touching.left || this.body.blocked.left) {
 		this.body.velocity.x = Slime.SPEED //turn right
+	}
+
+	if (this.body.velocity.x < 0) { //left animation
+		this.scale.x = -1;
+	} else if (this.body.velocity.x > 0) { //right animation
+		this.scale.x = 1;
 	}
 };
 
