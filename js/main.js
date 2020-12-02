@@ -73,11 +73,14 @@ Hero.prototype.update = function () {
 	}
 }
 
+////////////////
+// enemy sprites
+////////////////
 //
-// enemy sprite
+// red slime sprites
 //
-function Slime(game, x, y) {
-	Phaser.Sprite.call(this, game, x, y, 'slime');
+function RedSlime(game, x, y) {
+	Phaser.Sprite.call(this, game, x, y, 'red_slime');
 
 	//anchor
 	this.anchor.set(0.5);
@@ -90,19 +93,19 @@ function Slime(game, x, y) {
 	//physics
 	this.game.physics.enable(this);
 	this.body.collideWorldBounds = true;
-	this.body.velocity.x = Slime.SPEED;
+	this.body.velocity.x = RedSlime.SPEED;
 }
 
-Slime.SPEED = 100;
+RedSlime.SPEED = 200;
 
-Slime.prototype = Object.create(Phaser.Sprite.prototype);
-Slime.prototype.constructor = Slime;
-Slime.prototype.update = function () {
+RedSlime.prototype = Object.create(Phaser.Sprite.prototype);
+RedSlime.prototype.constructor = RedSlime;
+RedSlime.prototype.update = function () {
 	//check against walls
 	if (this.body.touching.right || this.body.blocked.right) {
-		this.body.velocity.x = -Slime.SPEED; //turn left
+		this.body.velocity.x = -RedSlime.SPEED; //turn left
 	} else if (this.body.touching.left || this.body.blocked.left) {
-		this.body.velocity.x = Slime.SPEED //turn right
+		this.body.velocity.x = RedSlime.SPEED //turn right
 	}
 
 	if (this.body.velocity.x < 0) { //left animation
@@ -112,7 +115,101 @@ Slime.prototype.update = function () {
 	}
 };
 
-Slime.prototype.die = function () {
+RedSlime.prototype.die = function () {
+	this.body.enable = false;
+
+	this.animations.play('die').onComplete.addOnce(function () {
+		this.kill();
+	}, this);
+}
+
+//
+// yellow slime sprites
+//
+function YellowSlime(game, x, y) {
+	Phaser.Sprite.call(this, game, x, y, 'yellow_slime');
+
+	//anchor
+	this.anchor.set(0.5);
+	//animation
+	this.animations.add('crawl', [0, 1, 2, 3, 3, 3], 8, true);
+	this.animations.add('die', [0], 12);
+
+	this.animations.play('crawl');
+
+	//physics
+	this.game.physics.enable(this);
+	this.body.collideWorldBounds = true;
+	this.body.velocity.x = YellowSlime.SPEED;
+}
+
+YellowSlime.SPEED = 200;
+
+YellowSlime.prototype = Object.create(Phaser.Sprite.prototype);
+YellowSlime.prototype.constructor = YellowSlime;
+YellowSlime.prototype.update = function () {
+	//check against walls
+	if (this.body.touching.right || this.body.blocked.right) {
+		this.body.velocity.x = -YellowSlime.SPEED; //turn left
+	} else if (this.body.touching.left || this.body.blocked.left) {
+		this.body.velocity.x = YellowSlime.SPEED //turn right
+	}
+
+	if (this.body.velocity.x < 0) { //left animation
+		this.scale.x = -1;
+	} else if (this.body.velocity.x > 0) { //right animation
+		this.scale.x = 1;
+	}
+};
+
+YellowSlime.prototype.die = function () {
+	this.body.enable = false;
+
+	this.animations.play('die').onComplete.addOnce(function () {
+		this.kill();
+	}, this);
+}
+
+//
+// green slime sprites
+//
+function GreenSlime(game, x, y) {
+	Phaser.Sprite.call(this, game, x, y, 'green_slime');
+
+	//anchor
+	this.anchor.set(0.5);
+	//animation
+	this.animations.add('crawl', [0, 1, 2, 2, 2, 3, 3,], 8, true);
+	this.animations.add('die', [0], 12);
+
+	this.animations.play('crawl');
+
+	//physics
+	this.game.physics.enable(this);
+	this.body.collideWorldBounds = true;
+	this.body.velocity.x = GreenSlime.SPEED;
+}
+
+GreenSlime.SPEED = 60;
+
+GreenSlime.prototype = Object.create(Phaser.Sprite.prototype);
+GreenSlime.prototype.constructor = GreenSlime;
+GreenSlime.prototype.update = function () {
+	//check against walls
+	if (this.body.touching.right || this.body.blocked.right) {
+		this.body.velocity.x = -GreenSlime.SPEED; //turn left
+	} else if (this.body.touching.left || this.body.blocked.left) {
+		this.body.velocity.x = GreenSlime.SPEED //turn right
+	}
+
+	if (this.body.velocity.x < 0) { //left animation
+		this.scale.x = -1;
+	} else if (this.body.velocity.x > 0) { //right animation
+		this.scale.x = 1;
+	}
+};
+
+GreenSlime.prototype.die = function () {
 	this.body.enable = false;
 
 	this.animations.play('die').onComplete.addOnce(function () {
@@ -213,7 +310,9 @@ PlayState.preload = function () {
 	this.game.load.audio('sfx:stomp', 'audio/stomp.wav');
 
 	this.game.load.spritesheet('hero', 'images/dude.png', 32, 48);
-	this.game.load.spritesheet('slime', 'images/red_slime.png', 32, 38);
+	this.game.load.spritesheet('red_slime', 'images/red_slime.png', 32, 38);
+	this.game.load.spritesheet('green_slime', 'images/green_slime.png', 32, 38);
+	this.game.load.spritesheet('yellow_slime', 'images/yellow_slime.png', 32, 38);
 	this.game.load.spritesheet('crescent', 'images/crescent.png', 14, 15);
 };
 
@@ -258,7 +357,7 @@ PlayState._loadLevel = function (data) {
 	this.killCount = 0;
 };
 
-PlayState._spawnPlatform = function (platform) {
+PlayState._spawnPlatform = function(platform) {
 	let sprite = this.platforms.create(
 		platform.x, platform.y, platform.image);
 
@@ -286,8 +385,16 @@ PlayState._spawnCharacters = function (data) {
 
 	//spawn enemies
 	data.slimes.forEach(function (slime) {
-		let sprite = new Slime(this.game, slime.x, slime.y);
-		this.slimes.add(sprite);
+		if (slime.type === 'redSlime') {
+			let sprite = new RedSlime(this.game, slime.x, slime.y);
+			this.slimes.add(sprite);
+		} else if (slime.type === 'greenSlime') {
+			let sprite = new GreenSlime(this.game, slime.x, slime.y);
+			this.slimes.add(sprite);
+		} else if (slime.type === 'yellowSlime') {
+			let sprite = new YellowSlime(this.game, slime.x, slime.y);
+			this.slimes.add(sprite);
+		}
 	}, this);
 };
 
