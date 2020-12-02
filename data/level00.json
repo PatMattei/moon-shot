@@ -15,6 +15,7 @@
     "hero": {"x": 21, "y": 525},
     "slimes": [
         {"type": "redSlime", "x": 121, "y": 399},
-        {"type": "greenSlime", "x": 721, "y": 399}
+        {"type": "greenSlime", "x": 721, "y": 399},
+        {"type": "yellowSlime", "x": 721, "y": 399}
     ]
 }

@@ -18,5 +18,12 @@
         {"frame": 1, "x": 515, "y": 126}, {"frame": 3, "x": 525, "y": 126}
     ],
     "hero": {"x": 21, "y": 525},
-    "slimes": [{"x": 121, "y": 399}, {"x": 800, "y": 362}, {"x": 500, "y": 147}]
+    "slimes": [
+        {"type": "redSlime", "x": 121, "y": 399},
+        {"type": "redSlime", "x": 800, "y": 362},
+        {"type": "greenSlime", "x": 721, "y": 399},
+        {"type": "greenSlime", "x": 500, "y": 147},
+        {"type": "yellowSlime", "x": 721, "y": 399},
+        {"type": "yellowSlime", "x": 500, "y": 100}
+    ]
 }
